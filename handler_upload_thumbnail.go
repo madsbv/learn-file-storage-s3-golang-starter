@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/base64"
 	"fmt"
 	"io"
 	"mime"
@@ -11,6 +12,7 @@ import (
 
 	"github.com/bootdotdev/learn-file-storage-s3-golang-starter/internal/auth"
 	"github.com/google/uuid"
+	"golang.org/x/crypto/sha3"
 )
 
 func (cfg *apiConfig) handlerUploadThumbnail(w http.ResponseWriter, r *http.Request) {
@@ -77,7 +79,11 @@ func (cfg *apiConfig) handlerUploadThumbnail(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	thumbnailFilename := fmt.Sprintf("%s.%s", videoID, filetype[1])
+	hash := make([]byte, 32)
+	sha3.ShakeSum256(hash, data)
+	hashStr := base64.RawURLEncoding.EncodeToString(hash)
+
+	thumbnailFilename := fmt.Sprintf("%s.%s", hashStr, filetype[1])
 	thumbnailPath := filepath.Join(cfg.assetsRoot, thumbnailFilename)
 	file, err := os.Create(thumbnailPath)
 	defer file.Close()
