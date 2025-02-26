@@ -93,7 +93,8 @@ func (cfg *apiConfig) handlerUploadVideo(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	*videoMetaData.VideoURL = fmt.Sprintf("https://%s.s3.%s.amazonaws.com/%s", cfg.s3Bucket, cfg.s3Region, key)
+	url := fmt.Sprintf("https://%s.s3.%s.amazonaws.com/%s", cfg.s3Bucket, cfg.s3Region, key)
+	videoMetaData.VideoURL = &url
 	err = cfg.db.UpdateVideo(videoMetaData)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Something went wrong updating db entry", err)
