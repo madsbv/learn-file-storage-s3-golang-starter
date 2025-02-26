@@ -49,6 +49,7 @@ func (cfg *apiConfig) handlerUploadThumbnail(w http.ResponseWriter, r *http.Requ
 		respondWithError(w, http.StatusBadRequest, "Thumbnail data not present", err)
 		return
 	}
+	defer formFile.Close()
 
 	contentType := header.Header.Get("Content-Type")
 	mediatype, _, err := mime.ParseMediaType(contentType)
